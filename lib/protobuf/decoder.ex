@@ -185,8 +185,7 @@ defmodule Protobuf.Decoder do
       # false, but they will be encoded as wire_delimited() one after the other. In proto2, this
       # is explicit ([packed=true] option). In proto3, it's by default. See:
       # https://developers.google.com/protocol-buffers/docs/encoding#packed
-      %{^field_number => %FieldProps{repeated?: true, name_atom: name_atom} = prop}
-      when wire_type == wire_delimited() ->
+      %{^field_number => %FieldProps{name_atom: name_atom} = prop}  ->
         new_message = update_in_message(message, name_atom, &value_for_packed(value, &1, prop))
         build_message(rest, new_message, props)
 
@@ -233,7 +232,7 @@ defmodule Protobuf.Decoder do
     %FieldProps{type: type, map?: map?, oneof: oneof, name_atom: name_atom, repeated?: repeated?} =
       prop
 
-    embed_msg = decode(bin, type)
+    embed_msg = bin
 
     val =
       if map? do
